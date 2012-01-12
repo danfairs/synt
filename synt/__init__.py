@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from synt.trainer import train
 from synt.collector import collect, fetch
-from synt.guesser import Guesser 
+from synt.guesser import Guesser
 from synt.accuracy import test_accuracy
 import sys, time
 
@@ -20,11 +20,11 @@ def main():
 
     #Train Parser
     train_parser = subparsers.add_parser(
-        'train', 
+        'train',
         help='Train a classifier.'
     )
     train_parser.add_argument(
-        'db_name', 
+        'db_name',
         help="The name of the training database to use. They are stored/retreived from ~/.synt/"
     )
     train_parser.add_argument(
@@ -55,7 +55,7 @@ def main():
         default='no',
         choices=('yes', 'no'),
         help="Yes to purge the redis database. By default no."
-    ) 
+    )
     train_parser.add_argument(
         '--processes',
         default=4,
@@ -63,7 +63,7 @@ def main():
     )
     train_parser.add_argument(
         '--redis_db',
-        default=5, 
+        default=5,
         type=int,
         help="The redis db to use. By default 5",
     )
@@ -93,11 +93,11 @@ def main():
 
     #Fetch parser
     fetch_parser = subparsers.add_parser(
-        'fetch', 
+        'fetch',
         help='Fetches premade sample database.'
     )
     fetch_parser.add_argument(
-        '--db_name', 
+        '--db_name',
         help="Fetches the default samples database from github and stores it as 'db' in ~/.synt/. Default db name is 'samples.db'.",
         default='samples.db',
     )
@@ -108,7 +108,7 @@ def main():
         help='Guess sentiment'
     )
     guess_parser.add_argument(
-        'guess', 
+        'guess',
         nargs='?',
         default=True,
         help="Starts the guess prompt.",
@@ -120,13 +120,13 @@ def main():
     )
     guess_parser.add_argument(
         '--redis_db',
-        default=5, 
+        default=5,
         help="The redis database to use.",
     )
 
     #Accuracy parser
     accuracy_parser = subparsers.add_parser(
-        'accuracy', 
+        'accuracy',
         help="Test accuracy of classifier.",
     )
     accuracy_parser.add_argument(
@@ -135,9 +135,9 @@ def main():
         help="""The samples database to use, if left empty the same database that was used for training is used for testing (with fresh samples). Specify db with with a database name located in ~/.synt.""",
     )
     accuracy_parser.add_argument(
-        '--test_samples', 
+        '--test_samples',
         type=int,
-        help="""The amount of samples to test on. By default this is figured out internally and amounts to 25%% 
+        help="""The amount of samples to test on. By default this is figured out internally and amounts to 25%%
         of the training sample count. You can override this.""",
         default=0,
     )
@@ -152,7 +152,7 @@ def main():
         default=0,
         type=int,
         help="""By default the test samples are taken from the offset of the trained samples. i.e if 100 samples are trained and we
-        are testing on 25 it will start from 100-125 to ensure the testing samples are new. You can override what offset to use 
+        are testing on 25 it will start from 100-125 to ensure the testing samples are new. You can override what offset to use
         with this argument.""",
     )
     accuracy_parser.add_argument(
@@ -165,10 +165,10 @@ def main():
     args = parser.parse_args()
 
     if args.parser == 'train':
-        print("Beginning train on {} database with {} samples.".format(args.db_name, args.samples))
-        
+        print("Beginning train on {0} database with {1} samples.".format(args.db_name, args.samples))
+
         start = time.time()
-        
+
         purge = False
         if args.purge == 'yes':
             purge = True
@@ -181,50 +181,50 @@ def main():
             best_features   = args.best_features,
             processes       = args.processes,
             purge           = purge,
-            redis_db        = args.redis_db, 
+            redis_db        = args.redis_db,
         )
-        
-        print("Finished training in {}.".format(time.time() - start))
+
+        print("Finished training in {0}.".format(time.time() - start))
 
     elif args.parser == 'collect':
-        print("Beginning collecting {} samples to {}.".format(args.max_collect, args.db_name))
-        
-        start = time.time() 
-        
+        print("Beginning collecting {0} samples to {1}.".format(args.max_collect, args.db_name))
+
+        start = time.time()
+
         collect(
             db_name      = args.db_name,
             commit_every = args.commit_every,
             max_collect  = args.max_collect,
-        )    
-        
-        print("Finished collecting samples in {} seconds.".format(time.time() - start))
+        )
+
+        print("Finished collecting samples in {0} seconds.".format(time.time() - start))
 
     elif args.parser == 'fetch':
-        print("Beginning fetch to '{}' database.".format(args.db_name)) 
+        print("Beginning fetch to '{0}' database.".format(args.db_name))
         fetch(args.db_name)
         print("Finished fetch.")
 
     elif args.parser == 'guess':
         g = Guesser(redis_db=args.redis_db)
-        
+
         if args.text:
             print("Guessed: ",  g.guess(args.text))
             sys.exit()
 
         print("Enter something to calculate the synt of it!")
         print("Press enter to quit.")
-    
+
         while True:
             text = raw_input("synt> ")
             if not text:
-                break    
-            print('Guessed: {}'.format(g.guess(text)))
-    
+                break
+            print('Guessed: {0}'.format(g.guess(text)))
+
     elif args.parser == 'accuracy':
-        print("Beginning accuracy test with neutral range {}.".format(args.neutral_range))
-        
+        print("Beginning accuracy test with neutral range {0}.".format(args.neutral_range))
+
         start = time.time()
-        
+
         n_accur, m_accur, classifier = test_accuracy(
             db_name       = args.db_name,
             test_samples  = args.test_samples,
@@ -232,13 +232,13 @@ def main():
             offset        = args.offset,
             redis_db      = args.redis_db,
         )
-        
-        print("NLTK Accuracy: {}".format(n_accur))
-        print("Manual Accuracy: {}".format(m_accur))
-        
+
+        print("NLTK Accuracy: {0}".format(n_accur))
+        print("Manual Accuracy: {0}".format(m_accur))
+
         classifier.show_most_informative_features(50)
-        
-        print("Finished testing in {} seconds.".format(time.time() - start))
+
+        print("Finished testing in {0} seconds.".format(time.time() - start))
 
 if __name__ == '__main__':
     main()
