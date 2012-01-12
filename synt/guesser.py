@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
 from synt.utils.db import RedisManager
 from synt.utils.extractors import get_extractor
 from synt.utils.text import normalize_text
+
+logger = logging.getLogger('synt.guesser')
 
 class Guesser(object):
 
@@ -10,13 +13,13 @@ class Guesser(object):
         self.redis_db = redis_db
         self.extractor = get_extractor(extractor_type)()
         self.normalizer = normalize_text
-   
+
     def _get_classifier(self):
         """
         Gets the classifier when it is first required.
         """
-        print("Retrieving classifier ...")
-        self._classifier = RedisManager(db=self.redis_db).pickle_load(self.classifier_type) 
+        logger.debug("Retrieving classifier ...")
+        self._classifier = RedisManager(db=self.redis_db).pickle_load(self.classifier_type)
 
     def guess(self, text):
         """
