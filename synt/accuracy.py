@@ -54,9 +54,10 @@ def test_accuracy(db_name='', test_samples=0, neutral_range=0, offset=0, redis_d
    
     if not db_name:
         db_name = m.r.get('trained_db') #use the trained samples database
-    
-    test_samples = get_samples(db_name, test_samples, offset=offset)
-   
+
+    test_samples = get_samples(db_name, test_samples, offset=offset,
+        redis_db=redis_db)
+
     testfeats = []
     trained_ext = m.r.get('trained_extractor')
     

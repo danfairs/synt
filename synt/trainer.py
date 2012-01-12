@@ -37,7 +37,7 @@ def train(db_name, samples=200000, classifier_type='naivebayes', extractor_type=
         raise ValueError("Classifier '%s' not supported." % classifier_type)
 
     #retrieve training samples from database
-    train_samples = get_samples(db_name, samples)
+    train_samples = get_samples(db_name, samples, redis_db=redis_db)
 
     m.store_feature_counts(train_samples, processes=processes)
     m.store_freqdists()

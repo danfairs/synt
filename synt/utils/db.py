@@ -200,7 +200,7 @@ class RedisManager(object):
         except TypeError:
             return
 
-def get_sample_limit(db='samples.db'):
+def get_sample_limit(db='samples.db', redis_db=5):
     """
     Returns the limit of samples so that both positive and negative samples
     will remain balanced.
@@ -212,7 +212,7 @@ def get_sample_limit(db='samples.db'):
 
     #this is an expensive operation in case of a large database
     #therefore we store the limit in redis and use that when we can
-    m = RedisManager()
+    m = RedisManager(db=redis_db)
     if 'limit' in m.r.keys():
         return int(m.r.get('limit'))
 
@@ -251,8 +251,8 @@ def get_samples(db, limit, offset=0):
 
     if limit < 2: limit = 2
 
-    if limit > get_sample_limit():
-        limit = get_sample_limit()
+    if limit > get_sample_limit(redis_db=redis_db):
+        limit = get_sample_limit(redis_db=redis_db)
 
     if limit % 2 != 0:
         limit -= 1 #we want an even number
