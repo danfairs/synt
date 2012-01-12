@@ -52,18 +52,17 @@ def normalize_text(text):
     for e in config.EMOTICONS:
         if e in text:
             _tmp.add(e)
-    
+
     text = text.translate(PUNC_MAP).strip() + ' ' #remove punctuation
     if _tmp:
         text += ' '.join([e for e in _tmp]) #attach emoticons back
-   
+
     if text:
         #tokenize on words longer than 1 char
         words = [w for w in WhitespaceTokenizer().tokenize(text) if len(w) > 1]
-    
+
         return words
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
