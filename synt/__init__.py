@@ -59,7 +59,8 @@ def main():
     train_parser.add_argument(
         '--processes',
         default=4,
-        help="Will utilize multiprocessing if available with this number of processes. By default 4."
+        help="Will utilize multiprocessing if available with this number of processes. By default 4.",
+        type=int,
     )
     train_parser.add_argument(
         '--redis_db',
