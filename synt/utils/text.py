@@ -13,7 +13,7 @@ FORMAT_PATS = (
         (re.compile("@[A-Za-z0-9_]+"), ''),
 
         # remove hash tags
-        (re.compile("#[A-Za-z0-9_]+"), ''),
+        (re.compile("#"), ''),
 
         # remove occurences of more than two consecutive repeating characters
         (re.compile("(\w)\\1{2,}"), "\\1\\1"),
