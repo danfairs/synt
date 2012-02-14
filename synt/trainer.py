@@ -38,7 +38,6 @@ def train(db_name, samples=200000, classifier_type='naivebayes', extractor_type=
 
     #retrieve training samples from database
     train_samples = get_samples(db_name, samples, redis_db=redis_db)
-
     m.store_feature_counts(train_samples, processes=processes)
     m.store_freqdists()
     m.store_feature_scores()
@@ -59,7 +58,11 @@ def train(db_name, samples=200000, classifier_type='naivebayes', extractor_type=
     labels = conditional_fd.conditions()
 
     #feature extraction
-    feat_ex = extractor()
+    # XXX Hack
+    if best_features:
+        feat_ex = extractor(m.get_best_features())
+    else:
+        feat_ex = extractor()
     extracted_set = set([feat_ex.extract(conditional_fd[label].keys(), as_list=True) for label in labels][0])
 
     #increment the amount of times a given feature for label occured and fill in the missing occurences with Falses
