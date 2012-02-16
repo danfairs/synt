@@ -60,11 +60,13 @@ def train(db_name, samples=200000, classifier_type='naivebayes', extractor_type=
     labels = conditional_fd.conditions()
 
     #feature extraction
+
     # XXX Hack
     if best_features:
         feat_ex = extractor(m.get_best_features())
     else:
         feat_ex = extractor()
+
     extracted_set = set([feat_ex.extract(conditional_fd[label].keys(), as_list=True) for label in labels][0])
 
     #increment the amount of times a given feature for label occured and fill in the missing occurences with Falses
@@ -105,7 +107,7 @@ if __name__ == "__main__":
     processes     = 8
     purge         = True
     extractor     = 'words'
-    redis_db      = 3
+    redis_db      = 5
 
     print("Beginning train on {} samples using '{}' db..".format(samples, db_name))
     start = time.time()
@@ -117,5 +119,5 @@ if __name__ == "__main__":
             processes     = processes,
             purge         = purge,
             redis_db      = redis_db,
-    )
+            )
     print("Successfully trained in {} seconds.".format(time.time() - start))

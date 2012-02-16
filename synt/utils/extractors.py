@@ -22,10 +22,10 @@ def get_extractor(type):
     """
 
     extractors = {
-        'words'     : WordExtractor,
-        'stopwords' : StopWordExtractor,
-        'bestwords' : BestWordExtractor,
-    }
+            'words'     : WordExtractor,
+            'stopwords' : StopWordExtractor,
+            'bestwords' : BestWordExtractor,
+            }
 
     if type not in extractors:
         raise KeyError("Extractor of type %s doesn't exist." % type)

@@ -7,7 +7,6 @@ from synt import config
 
 #ordinal -> none character mapping
 PUNC_MAP = dict([(ord(x),None) for x in string.punctuation])
-
 FORMAT_PATS = (
         # remove re-tweets
         (re.compile("@[A-Za-z0-9_]+"), ''),

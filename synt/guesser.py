@@ -3,6 +3,7 @@ import logging
 from synt.utils.db import RedisManager
 from synt.utils.extractors import get_extractor
 from synt.utils.text import normalize_text
+from synt import config
 
 logger = logging.getLogger('synt.guesser')
 

@@ -85,8 +85,9 @@ def redis_feature_consumer(samples, **kwargs):
 
 class RedisManager(object):
 
-    def __init__(self, db=5, host='localhost', purge=False):
-        self.r = redis.Redis(db=db, host=host)
+    def __init__(self, db=5, host=config.REDIS_HOST,
+            password=config.REDIS_PASSWORD, purge=False):
+        self.r = redis.Redis(db=db, host=host, password=password)
         self.db = db
         self.host = host
         if purge is True:
