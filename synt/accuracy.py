@@ -6,7 +6,7 @@ from synt.utils.extractors import get_extractor
 from synt.guesser import Guesser
 
 def test_accuracy(db_name='', test_samples=0, neutral_range=0, offset=0, redis_db=5,
-                  redis_host='localhost'):
+                  redis_host='localhost', extractor_type=None):
     """
     Returns two accuracies and classifier:
     NLTK accuracy is the internal accuracy of the classifier
@@ -60,9 +60,13 @@ def test_accuracy(db_name='', test_samples=0, neutral_range=0, offset=0, redis_d
         redis_db=redis_db, redis_host=redis_host)
 
     testfeats = []
-    trained_ext = m.r.get('trained_extractor')
+    if not extractor_type:
+        extractor_type = m.r.get('trained_extractor')
 
-    feat_ex = get_extractor(trained_ext)()
+    feat_ex = get_extractor(extractor_type)(
+        redis_db=redis_db,
+        redis_host=redis_host
+    )
 
     #normalization and extraction
     for text, label in test_samples:
@@ -78,7 +82,7 @@ def test_accuracy(db_name='', test_samples=0, neutral_range=0, offset=0, redis_d
     total_correct = 0
     total_incorrect = 0
 
-    g = Guesser(extractor_type=trained_ext)
+    g = Guesser(extractor_type=extractor_type, redis_db=redis_db, redis_host=redis_host)
 
     #compare the guessed sentiments with our samples database to determine manual accuracy
     for text, label in test_samples:

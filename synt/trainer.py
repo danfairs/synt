@@ -62,10 +62,7 @@ def train(db_name, samples=200000, classifier_type='naivebayes', extractor_type=
     #feature extraction
 
     # XXX Hack
-    if best_features:
-        feat_ex = extractor(m.get_best_features())
-    else:
-        feat_ex = extractor()
+    feat_ex = extractor(redis_db=redis_db, redis_host=redis_host)
 
     extracted_set = set([feat_ex.extract(conditional_fd[label].keys(), as_list=True) for label in labels][0])
 

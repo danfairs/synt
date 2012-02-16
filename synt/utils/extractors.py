@@ -33,6 +33,9 @@ def get_extractor(type):
 
 class WordExtractor(object):
 
+    def __init__(self, redis_db=None, redis_host=None):
+        pass
+
     def extract(self, words, as_list=False):
         """
         Returns a base bag of words.
@@ -54,7 +57,7 @@ class WordExtractor(object):
 
 class StopWordExtractor(WordExtractor):
 
-    def __init__(self, stop_words=None):
+    def __init__(self, stop_words=None, redis_db=None, redis_host=None):
         if stop_words:
             self.stop_words = stop_words
         else:

@@ -16,7 +16,8 @@ class Guesser(object):
         self.classifier_type = classifier_type
         self.redis_db = redis_db
         self.redis_host = redis_host
-        self.extractor = get_extractor(extractor_type)()
+        self.extractor = get_extractor(extractor_type)(redis_db=redis_db,
+            redis_host=redis_host)
         self.normalizer = normalize_text
 
     def _get_classifier(self):
