@@ -6,7 +6,8 @@ from synt.utils.extractors import get_extractor
 from synt import config
 
 def train(db_name, samples=200000, classifier_type='naivebayes', extractor_type='words',
-    best_features=10000, processes=8, purge=False, redis_db=5):
+    best_features=10000, processes=8, purge=False, redis_db=5,
+    redis_host='localhost'):
     """
     Train with samples from sqlite database and stores the resulting classifier in Redis.
 
@@ -21,7 +22,7 @@ def train(db_name, samples=200000, classifier_type='naivebayes', extractor_type=
     processes (int) -- The amount of processes to be used for counting features in parallel.
     redis_db (int) -- Redis database to use for Redis Manager.
     """
-    m = RedisManager(db=redis_db, purge=purge)
+    m = RedisManager(db=redis_db, purge=purge, host=redis_host)
 
     extractor = get_extractor(extractor_type)
 
@@ -37,7 +38,8 @@ def train(db_name, samples=200000, classifier_type='naivebayes', extractor_type=
         raise ValueError("Classifier '%s' not supported." % classifier_type)
 
     #retrieve training samples from database
-    train_samples = get_samples(db_name, samples, redis_db=redis_db)
+    train_samples = get_samples(db_name, samples, redis_db=redis_db,
+        redis_host=redis_host)
     m.store_feature_counts(train_samples, processes=processes)
     m.store_freqdists()
     m.store_feature_scores()

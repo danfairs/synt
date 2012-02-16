@@ -68,6 +68,11 @@ def main():
         type=int,
         help="The redis db to use. By default 5",
     )
+    train_parser.add_argument(
+        '--redis_host',
+        default='localhost',
+        help="The redis host to use. By default localhost"
+    )
 
     #Collect parser
     collect_parser = subparsers.add_parser(
@@ -124,6 +129,11 @@ def main():
         default=5,
         help="The redis database to use.",
     )
+    guess_parser.add_argument(
+        '--redis_host',
+        default='localhost',
+        help="The redis host to use. By default localhost"
+    )
 
     #Accuracy parser
     accuracy_parser = subparsers.add_parser(
@@ -162,6 +172,11 @@ def main():
         type=int,
         help="You can override the redis database used, by default its the same as the training db.",
     )
+    accuracy_parser.add_argument(
+        '--redis_host',
+        default='localhost',
+        help="The redis host to use. By default localhost"
+    )
 
     args = parser.parse_args()
 
@@ -173,7 +188,6 @@ def main():
         purge = False
         if args.purge == 'yes':
             purge = True
-
         train(
             db_name         = args.db_name,
             samples         = args.samples,
@@ -183,6 +197,7 @@ def main():
             processes       = args.processes,
             purge           = purge,
             redis_db        = args.redis_db,
+            redis_host      = args.redis_host,
         )
 
         print("Finished training in {0}.".format(time.time() - start))
@@ -206,7 +221,7 @@ def main():
         print("Finished fetch.")
 
     elif args.parser == 'guess':
-        g = Guesser(redis_db=args.redis_db)
+        g = Guesser(redis_db=args.redis_db, redis_host=args.redis_host)
 
         if args.text:
             print("Guessed: ",  g.guess(args.text))
@@ -232,6 +247,7 @@ def main():
             neutral_range = args.neutral_range,
             offset        = args.offset,
             redis_db      = args.redis_db,
+            redis_host      = args.redis_host,
         )
 
         print("NLTK Accuracy: {0}".format(n_accur))

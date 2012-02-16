@@ -5,7 +5,8 @@ from synt.utils.text import normalize_text
 from synt.utils.extractors import get_extractor
 from synt.guesser import Guesser
 
-def test_accuracy(db_name='', test_samples=0, neutral_range=0, offset=0, redis_db=5):
+def test_accuracy(db_name='', test_samples=0, neutral_range=0, offset=0, redis_db=5,
+                  redis_host='localhost'):
     """
     Returns two accuracies and classifier:
     NLTK accuracy is the internal accuracy of the classifier
@@ -32,7 +33,7 @@ def test_accuracy(db_name='', test_samples=0, neutral_range=0, offset=0, redis_d
     redis_db (int) -- The redis database to use.
     """
 
-    m = RedisManager(db=redis_db)
+    m = RedisManager(db=redis_db, host=redis_host)
     trained_classifier = m.r.get('trained_classifier') #retrieve the trained classifier
 
     if not trained_classifier:
@@ -56,7 +57,7 @@ def test_accuracy(db_name='', test_samples=0, neutral_range=0, offset=0, redis_d
         db_name = m.r.get('trained_db') #use the trained samples database
 
     test_samples = get_samples(db_name, test_samples, offset=offset,
-        redis_db=redis_db)
+        redis_db=redis_db, redis_host=redis_host)
 
     testfeats = []
     trained_ext = m.r.get('trained_extractor')

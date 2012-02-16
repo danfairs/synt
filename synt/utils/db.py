@@ -53,10 +53,12 @@ def redis_feature_consumer(samples, **kwargs):
 
     if 'db' not in kwargs:
         raise KeyError("Feature consumer requires db.")
+    if 'host' not in kwargs:
+        raise KeyError("Feature consumer requires host.")
 
     db = kwargs['db']
-
-    rm = RedisManager(db=db)
+    host = kwargs['host']
+    rm = RedisManager(db=db, host=host)
     pipeline = rm.r.pipeline()
 
     neg_processed, pos_processed = 0, 0
@@ -86,6 +88,7 @@ class RedisManager(object):
     def __init__(self, db=5, host='localhost', purge=False):
         self.r = redis.Redis(db=db, host=host)
         self.db = db
+        self.host = host
         if purge is True:
             self.r.flushdb()
 
@@ -106,7 +109,7 @@ class RedisManager(object):
             return
 
         #do this with multiprocessing
-        c_args = {'db': self.db}
+        c_args = {'db': self.db, 'host': self.host}
         batch_job(samples, redis_feature_consumer, chunksize=chunksize, processes=processes, consumer_args=c_args)
 
     def store_freqdists(self):
@@ -200,7 +203,7 @@ class RedisManager(object):
         except TypeError:
             return
 
-def get_sample_limit(db='samples.db', redis_db=5):
+def get_sample_limit(db='samples.db', redis_db=5, redis_host='localhost'):
     """
     Returns the limit of samples so that both positive and negative samples
     will remain balanced.
@@ -212,7 +215,7 @@ def get_sample_limit(db='samples.db', redis_db=5):
 
     #this is an expensive operation in case of a large database
     #therefore we store the limit in redis and use that when we can
-    m = RedisManager(db=redis_db)
+    m = RedisManager(db=redis_db, host=redis_host)
     if 'limit' in m.r.keys():
         return int(m.r.get('limit'))
 
@@ -231,7 +234,7 @@ def get_sample_limit(db='samples.db', redis_db=5):
 
     return limit
 
-def get_samples(db, limit, offset=0, redis_db=5):
+def get_samples(db, limit, offset=0, redis_db=5, redis_host='localhost'):
     """
     Returns a combined list of negative and positive samples in a (text, label) format.
 
@@ -251,8 +254,9 @@ def get_samples(db, limit, offset=0, redis_db=5):
 
     if limit < 2: limit = 2
 
-    if limit > get_sample_limit(redis_db=redis_db):
-        limit = get_sample_limit(redis_db=redis_db)
+    sample_limit = get_sample_limit(redis_db=redis_db, redis_host=redis_host)
+    if limit > sample_limit:
+        limit = sample_limit
 
     if limit % 2 != 0:
         limit -= 1 #we want an even number

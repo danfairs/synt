@@ -6,11 +6,15 @@ from synt.utils.text import normalize_text
 
 logger = logging.getLogger('synt.guesser')
 
+
 class Guesser(object):
 
-    def __init__(self, classifier_type='naivebayes', extractor_type='stopwords', redis_db=5):
+    def __init__(self, classifier_type='naivebayes',
+                 extractor_type='stopwords', redis_db=5,
+                redis_host='localhost'):
         self.classifier_type = classifier_type
         self.redis_db = redis_db
+        self.redis_host = redis_host
         self.extractor = get_extractor(extractor_type)()
         self.normalizer = normalize_text
 
@@ -19,7 +23,8 @@ class Guesser(object):
         Gets the classifier when it is first required.
         """
         logger.debug("Retrieving classifier ...")
-        self._classifier = RedisManager(db=self.redis_db).pickle_load(self.classifier_type)
+        self._classifier = RedisManager(db=self.redis_db,
+            host=self.redis_host).pickle_load(self.classifier_type)
 
     def guess(self, text):
         """
