@@ -89,7 +89,7 @@ class BestWordExtractor(WordExtractor):
             self.best_words = best_words
         else:
             self.best_words = RedisManager(db=redis_db,
-                redis_host=redis_host).get_best_features()
+                host=redis_host).get_best_features()
 
     def extract(self, words, as_list=False):
         """
