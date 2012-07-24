@@ -14,8 +14,8 @@ setup(
     long_description=open('README.md').read(),
     install_requires=[
         'redis',
-        'nltk==2.0.1rc1',
-        'PyYAML==3.09',
+        'nltk',
+        'PyYAML',
         'simplejson',
         'kral',
     ],
